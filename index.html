@@ -4,71 +4,159 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>far.pet</title>
-    <!-- Import Archivo Black font from Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
     <style>
-        /* Set the cursor to default for the entire body */
         body {
-            cursor: default; /* Ensures default cursor is used */
+            background: linear-gradient(0deg, rgba(7,37,48,1) 0%, rgba(0,0,0,1) 100%);
+            height: 100svh;
+            margin: 0;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #ffffff;
-            font-family: 'Archivo Black', sans-serif; /* Apply Archivo Black font */
+            flex-direction: column;
         }
 
-        .container {
-            text-align: center;
+        .snowverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            pointer-events: none;
         }
 
-        #startText {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: rgb(248, 136, 239); /* Make the "Continue?" text pink */
-            transition: opacity 0.5s ease-out;
-        }
-
-        #gif {
-            display: none;
-            opacity: 0;
-            transition: opacity 1s ease-in;
-            margin-top: 20px;
-            width: 300px; /* Adjust the width here */
-            height: auto; /* Maintain the aspect ratio */
-        }
-
-        #audioPlayer {
-            display: none; /* Hidden initially */
+        .soundcloud-player {
+            width: 80%;
+            max-width: 600px;
+            height: 166px;
+            margin-top: 50px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div id="startText">click anywhere!!</div>
-        <img id="gif" src="https://files.catbox.moe/uxyu9k.gif" alt="Loading...">
-        <!-- Audio player with loop attribute -->
-        <audio id="audioPlayer" src="ok.mp3" loop></audio>
-    </div>
-
+    <canvas class="snowverlay"></canvas>
+    
+    <!-- SoundCloud Embed -->
+    <iframe class="soundcloud-player" src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/still_jerkin/zodiac-killer-prod-icydior&color=%23444444&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true" frameborder="0" allow="autoplay"></iframe>
+    
     <script>
-        // Listen for click events anywhere on the body
-        document.body.addEventListener('click', function() {
-            // Instantly hide the "Continue?" text
-            document.getElementById('startText').style.display = 'none';
+        const CANVAS_HEIGHT = 0.3;
+        const SNOWFLAKE_AMOUNT = 50;
+        const SNOWFLAKE_SIZE = {
+            min: 1,
+            max: 4
+        };
+        const SNOWFLAKE_SPEED = {
+            min: 0.2,
+            max: 1.2
+        };
+        const CANVAS_SELECTOR = ".snowverlay";
 
-            // Make the GIF visible and start fading it in
-            document.getElementById('gif').style.display = 'block';
-            setTimeout(function() {
-                document.getElementById('gif').style.opacity = 1; // Fade in the GIF
-            }, 0); // Immediately start the fade-in
+        let animationFrame;
 
-            // Show and play the audio
-            var audioPlayer = document.getElementById('audioPlayer');
-            audioPlayer.style.display = 'block'; // Optionally make it visible
-            audioPlayer.play(); // Play the audio file
+        // Shared utilities
+        const setupCanvas = () => {
+            const canvas = document.querySelector(CANVAS_SELECTOR);
+            const ctx = canvas.getContext("2d");
+            if (!ctx) {
+                return null;
+            }
+
+            const setCanvasSize = () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight * CANVAS_HEIGHT;
+            };
+
+            setCanvasSize();
+            window.addEventListener("resize", setCanvasSize);
+
+            return { canvas, ctx };
+        };
+
+        const createSnowflake = (canvas, isAnimated = true, index = 0) => ({
+            x: Math.random() * canvas.width,
+            y: isAnimated
+                ? -20 - (index * canvas.height) / SNOWFLAKE_AMOUNT
+                : Math.random() * canvas.height,
+            size:
+                Math.random() * (SNOWFLAKE_SIZE.max - SNOWFLAKE_SIZE.min) +
+                SNOWFLAKE_SIZE.min,
+            speed:
+                Math.random() * (SNOWFLAKE_SPEED.max - SNOWFLAKE_SPEED.min) +
+                SNOWFLAKE_SPEED.min,
+            opacity: isAnimated ? null : Math.random() * 0.5 + 0.2
         });
+
+        const drawSnowflake = (ctx, flake, canvas) => {
+            ctx.beginPath();
+            ctx.fillStyle = `rgba(255, 255, 255, ${
+                flake.opacity ?? 1 - flake.y / canvas.height
+            })`;
+            ctx.arc(flake.x, flake.y, flake.size, 0, Math.PI * 2);
+            ctx.fill();
+        };
+
+        const renderStaticSnow = () => {
+            const setup = setupCanvas();
+            if (!setup) return;
+            const { canvas, ctx } = setup;
+
+            Array(SNOWFLAKE_AMOUNT)
+                .fill(undefined)
+                .map(() => createSnowflake(canvas, false))
+                .forEach((flake) => drawSnowflake(ctx, flake, canvas));
+        };
+
+        const startSnowAnimation = () => {
+            const setup = setupCanvas();
+            if (!setup) {
+                return;
+            }
+
+            const { canvas, ctx } = setup;
+
+            const snowflakes = Array(SNOWFLAKE_AMOUNT)
+                .fill(undefined)
+                .map((_event, index) => createSnowflake(canvas, true, index));
+
+            const animate = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                snowflakes.forEach((flake) => {
+                    flake.y += flake.speed;
+                    flake.x += Math.sin(flake.y / 30) * 0.5;
+
+                    if (flake.y > canvas.height) {
+                        flake.y = 0;
+                        flake.x = Math.random() * canvas.width;
+                    }
+
+                    drawSnowflake(ctx, flake, canvas);
+                });
+
+                animationFrame = requestAnimationFrame(animate);
+            };
+
+            animate();
+
+            return () => {
+                cancelAnimationFrame(animationFrame);
+            };
+        };
+
+        const init = () => {
+            const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+            const handleMotionPreference = (event) => {
+                if (event.matches) {
+                    renderStaticSnow();
+                } else {
+                    startSnowAnimation();
+                }
+            };
+
+            mediaQuery.addEventListener("change", handleMotionPreference);
+            handleMotionPreference(mediaQuery);
+        };
+
+        document.addEventListener("DOMContentLoaded", init);
     </script>
 </body>
 </html>
