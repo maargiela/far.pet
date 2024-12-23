@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>far.pet</title>
+    <!-- Import Archivo Black font from Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
+    <style>
+        /* Set the cursor to default for the entire body */
+        body {
+            cursor: default; /* Ensures default cursor is used */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #ffffff;
+            font-family: 'Archivo Black', sans-serif; /* Apply Archivo Black font */
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        #startText {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: rgb(248, 136, 239); /* Make the "Continue?" text pink */
+            transition: opacity 0.5s ease-out;
+        }
+
+        #gif {
+            display: none;
+            opacity: 0;
+            transition: opacity 1s ease-in;
+            margin-top: 20px;
+            width: 300px; /* Adjust the width here */
+            height: auto; /* Maintain the aspect ratio */
+        }
+
+        #audioPlayer {
+            display: none; /* Hidden initially */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="startText">click anywhere!!</div>
+        <img id="gif" src="https://files.catbox.moe/uxyu9k.gif" alt="Loading...">
+        <!-- Audio player with loop attribute -->
+        <audio id="audioPlayer" src="ok.mp3" loop></audio>
+    </div>
+
+    <script>
+        // Listen for click events anywhere on the body
+        document.body.addEventListener('click', function() {
+            // Instantly hide the "Continue?" text
+            document.getElementById('startText').style.display = 'none';
+
+            // Make the GIF visible and start fading it in
+            document.getElementById('gif').style.display = 'block';
+            setTimeout(function() {
+                document.getElementById('gif').style.opacity = 1; // Fade in the GIF
+            }, 0); // Immediately start the fade-in
+
+            // Show and play the audio
+            var audioPlayer = document.getElementById('audioPlayer');
+            audioPlayer.style.display = 'block'; // Optionally make it visible
+            audioPlayer.play(); // Play the audio file
+        });
+    </script>
+</body>
+</html>
