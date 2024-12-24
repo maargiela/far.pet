@@ -4,70 +4,127 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>far.pet</title>
-    <!-- Import Archivo Black font from Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* Set the cursor to default for the entire body */
         body {
-            cursor: default; /* Ensures default cursor is used */
+            background-color: #FFFFFF;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #ffffff;
-            font-family: 'Archivo Black', sans-serif; /* Apply Archivo Black font */
+            cursor: default; /* Ensure the cursor is always normal */
         }
 
-        .container {
-            text-align: center;
+        .image-container {
+            border: 1px solid black;
+            padding: 0;
         }
 
-        #startText {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: rgb(248, 136, 239); /* Make the "Continue?" text pink */
-            transition: opacity 0.5s ease-out;
+        img {
+            display: block;
+            max-width: 100%;
+            height: auto;
         }
 
-        #gif {
-            display: none;
-            opacity: 0;
-            transition: opacity 1s ease-in;
+        a {
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            color: blue;
+            text-decoration: underline;
+            margin-bottom: 10px;
+            transition: color 0.3s ease, letter-spacing 0.3s ease;
+            letter-spacing: 0px;
+            cursor: default; /* Ensure the cursor is normal on hover over the link */
+        }
+
+        a:hover {
+            letter-spacing: 2px;
+        }
+
+        .links-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
             margin-top: 20px;
-            width: 300px; /* Adjust the width here */
-            height: auto; /* Maintain the aspect ratio */
-        }
-
-        #audioPlayer {
-            display: none; /* Hidden initially */
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div id="startText">click anywhere!!</div>
-        <img id="gif" src="https://files.catbox.moe/uxyu9k.gif" alt="Loading...">
-        <!-- Audio player with loop attribute -->
-        <audio id="audioPlayer" src="ok.mp3" loop></audio>
+    <a href="javascript:void(0);" id="dynamicText">farville</a>
+    <div class="image-container">
+        <img src="lxisha.png" alt="Centered Image">
     </div>
 
     <script>
-        // Listen for click events anywhere on the body
-        document.body.addEventListener('click', function() {
-            // Instantly hide the "Continue?" text
-            document.getElementById('startText').style.display = 'none';
+        const textElement = document.getElementById('dynamicText');
+        const imageContainer = document.querySelector('.image-container');
+        const originalText = "farville";
+        const randomChars = [
+            "$#^%@!", "@!$&*#", "?*&$^@", "4569kjd", "%%^&@#!", "ABcd1234", "124@#&", "9876asdf"
+        ];
 
-            // Make the GIF visible and start fading it in
-            document.getElementById('gif').style.display = 'block';
-            setTimeout(function() {
-                document.getElementById('gif').style.opacity = 1; // Fade in the GIF
-            }, 0); // Immediately start the fade-in
+        let changeTextInterval;
 
-            // Show and play the audio
-            var audioPlayer = document.getElementById('audioPlayer');
-            audioPlayer.style.display = 'block'; // Optionally make it visible
-            audioPlayer.play(); // Play the audio file
+        textElement.addEventListener('mouseenter', () => {
+            let counter = 0;
+            changeTextInterval = setInterval(() => {
+                let randomText = randomChars[counter % randomChars.length];
+                textElement.textContent = randomText.length > 8 ? randomText.substring(0, 8) : randomText;
+                counter++;
+            }, 100);
+        });
+
+        textElement.addEventListener('mouseleave', () => {
+            clearInterval(changeTextInterval);
+            textElement.textContent = originalText;
+        });
+
+        // Hide both the text and the image, then add new links and the new image when the text is clicked
+        textElement.addEventListener('click', () => {
+            // Hide the text and the image
+            textElement.style.display = 'none';
+            imageContainer.style.display = 'none';
+
+            // Create and append new links
+            const linksContainer = document.createElement('div');
+            linksContainer.classList.add('links-container');
+
+            const link1 = document.createElement('a');
+            link1.href = 'https://namemc.com/profile/66v6.1';
+            link1.textContent = 'NameMC';
+            linksContainer.appendChild(link1);
+
+            const link2 = document.createElement('a');
+            link2.href = 'https://www.roblox.com/users/6145858226/profile';
+            link2.textContent = 'helo guysguys roblox';
+            linksContainer.appendChild(link2);
+
+            // Append the new links to the body
+            document.body.appendChild(linksContainer);
+
+            // Add the new image
+            const newImageContainer = document.createElement('div');
+            newImageContainer.classList.add('image-container');
+            const newImage = document.createElement('img');
+            newImage.src = 'yieraw.webp';  // Updated to the local file path
+            newImage.alt = 'New Image after clicking';
+            newImageContainer.appendChild(newImage);
+            document.body.appendChild(newImageContainer);
+        });
+
+        // Disable Ctrl + S (Save) shortcut
+        window.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+            }
+        });
+
+        // Disable right-click context menu
+        window.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
         });
     </script>
 </body>
