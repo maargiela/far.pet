@@ -126,6 +126,13 @@
         window.addEventListener('contextmenu', (e) => {
             e.preventDefault();
         });
+
+        // Disable F12 (Developer Tools)
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'F12') {
+                e.preventDefault();
+            }
+        });
     </script>
 </body>
 </html>
