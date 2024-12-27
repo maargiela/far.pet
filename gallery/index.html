@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>far.pet art gallery</title>
+
+    <!-- Link to Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Open+Sans&family=Lora&family=Pacifico&family=Playfair+Display&display=swap" rel="stylesheet">
+
+    <style>
+        /* Add some basic styling for the body */
+        body {
+            text-align: center;
+            font-size: 20px;
+            margin: 0;
+            padding: 0;
+        }
+        /* Styling for the image */
+        img {
+            max-width: 80%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="title">drawing.png</h1>
+    <img src="drawing and silver.png" alt="Drawing and Silver Image">
+
+    <script>
+        // List of Google Fonts to choose from
+        const fonts = [
+            'Roboto', 
+            'Open Sans', 
+            'Lora', 
+            'Pacifico', 
+            'Playfair Display'
+        ];
+
+        // Function to randomly select a font
+        function getRandomFont() {
+            const randomIndex = Math.floor(Math.random() * fonts.length);
+            return fonts[randomIndex];
+        }
+
+        // Apply a random Google Font to the title
+        document.getElementById('title').style.fontFamily = getRandomFont();
+    </script>
+</body>
+</html>
